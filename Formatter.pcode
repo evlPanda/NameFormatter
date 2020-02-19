@@ -1,0 +1,75 @@
+class Formatter
+   method getPrefix(&prefix As string) Returns string;
+   method getFirstName(&names As string) Returns string;
+   method getMiddleName(&names As string) Returns string;
+   method getLastName(&name As string) Returns string;
+   method formatUserDescription(&prefix_ As string, &firstNames_ As string, &lastName_ As string) Returns string;
+private
+   Constant &maxFieldLength = 30;
+   method fullName(&prefix As string, &Names As array of string, &lastName As string) Returns string;
+end-class;
+
+method getPrefix
+   /+ &prefix as String +/
+   /+ Returns String +/
+   &prefix = Substitute(&prefix, ".", "");
+   &prefix = Substitute(&prefix, ",", "");
+   &prefix = Substitute(&prefix, "-", "");
+   Local string &validValue;
+   SQLExec("select name_prefix from ps_name_prefix_tbl where upper(name_prefix) = :1 or upper(descr) = :1 or upper(descrshort) = :1", Upper(&prefix), &validValue);
+   Return &validValue;
+end-method;
+
+method getFirstName
+   /+ &names as String +/
+   /+ Returns String +/
+   Return Left(Proper(Split(&names, " ")[1]), &maxFieldLength);
+end-method;
+
+method getMiddleName
+   /+ &names as String +/
+   /+ Returns String +/
+   If Split(&names, " ").Len < 2 Then
+      Return "";
+   End-If;
+   Return Left(Proper(Split(&names, " ")[2]), &maxFieldLength);
+end-method;
+
+method getLastName
+   /+ &name as String +/
+   /+ Returns String +/
+   Local string &lastName;
+   SQLExec(SQL.UQ_GET_FORMATTED_LAST_NAME, &name, &lastName);
+   If &lastName = "" Then
+      Return Left(Proper(&name), &maxFieldLength);
+   End-If;
+   Return Left(&lastName, &maxFieldLength);
+end-method;
+
+method formatUserDescription
+   /+ &prefix_ as String, +/
+   /+ &firstNames_ as String, +/
+   /+ &lastName_ as String +/
+   /+ Returns String +/
+   Local string &lastName = %This.getLastName(&lastName_);
+   Local array of string &FirstNames = Split(&firstNames_, " ");
+   Local integer &i;
+   For &i = &FirstNames.Len To 1 Step - 1
+      If Len(%This.fullName(&prefix_, &FirstNames, &lastName)) <= &maxFieldLength Then
+         Return %This.fullName(&prefix_, &FirstNames, &lastName);
+      End-If;
+      &FirstNames.Pop();
+   End-For;
+   Return Left(Proper(&lastName), &maxFieldLength);
+end-method;
+
+
+/* private */
+
+method fullName
+   /+ &prefix as String, +/
+   /+ &Names as Array of String, +/
+   /+ &lastName as String +/
+   /+ Returns String +/
+   Return &prefix | " " | &Names.Join(" ", "", "") | " " | &lastName;
+end-method;
