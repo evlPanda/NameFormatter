@@ -3,7 +3,7 @@ Format Prefix, *find first and middle names, format last name, format user descr
 
 Example:
 
-'''
+```
 import Utils:Formatter &Formatter;
 
 local Utils:Formatter &Formatter;
