@@ -4,13 +4,10 @@ Format Prefix, *find first and middle names, format last name, format user descr
 Example:
 
 ```
-import Utils:Formatter &Formatter;
-
-local Utils:Formatter &Formatter;
 &Formatter = create Utils:Formatter();
 
-local string &firstName = &Formatter.getFirstName("John Paul Ringo George");
-local string &lastName = &Formatter.getLastName("MCDONALD");
+&firstName = &Formatter.getFirstName("John Paul Ringo George");
+&lastName = &Formatter.getLastName("MCDONALD");
 ```
 
 ```&firstName``` will be 'John'. 
