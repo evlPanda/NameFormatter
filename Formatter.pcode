@@ -39,7 +39,7 @@ method getLastName
    /+ &name as String +/
    /+ Returns String +/
    Local string &lastName;
-   SQLExec(SQL.UQ_GET_FORMATTED_LAST_NAME, &name, &lastName);
+   SQLExec(SQL.XX_GET_FORMATTED_LAST_NAME, &name, &lastName);
    If &lastName = "" Then
       Return Left(Proper(&name), &maxFieldLength);
    End-If;
